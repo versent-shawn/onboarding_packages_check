@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# package arrays
+packages_list="packages_list.txt"
+packages=()
+
+right_checkmark="✔"
+wrong_checkmark="✘"
+
+
+# Check if the file exists
+if [ -f "$packages_list" ]; then
+    # Read the file line by line and add each line to the 'packages' array
+    while IFS= read -r package; do
+        packages+=("$package")
+    done < "$packages_list"
+fi
+
+# Function to check if a package is installed
+is_package_installed() {
+    # brew list "$1" &> /dev/null
+    if brew list "$1" &> /dev/null; then
+        return 0
+    fi
+
+    # cmd check
+    if command -v "$1" &> /dev/null; then
+        return 0 
+    fi
+
+    # Check if the package is installed via pip3 (pip3 show)
+    if pip3 show "$1" &> /dev/null; then
+        return 0
+    fi
+
+    return 1
+}
+
+# Loop through the packages and check if they are installed
+for package in "${packages[@]}"; do
+    if is_package_installed "$package"; then
+        echo "$right_checkmark $package is installed. "
+    else
+        echo "$wrong_checkmark $package is not installed."
+    fi
+done
