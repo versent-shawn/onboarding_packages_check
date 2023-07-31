@@ -1,4 +1,4 @@
-wrong
+wrong_packages
 gawk
 gzip
 watch
